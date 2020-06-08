@@ -4,7 +4,6 @@ module.exports.name = "remove-users";
 module.exports.description = "Remove blocked user of friends";
 module.exports.permission = ["friends"];
 module.exports.run = async (cfg, call) => {
-    let token = await cin(">token[If you used default token in (config.json) press enter]: ") ||  cfg.token;
     let user = await call("users.get");
     if(user.error) {
         console.log(user);
