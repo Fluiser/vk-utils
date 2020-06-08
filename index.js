@@ -33,5 +33,19 @@ async function call(method, arg = {}) {
         console.log(`I can't find defined function...\nSorry.`);
         return;
     }
+
+    let permissionUser = await call("apps.getScopes");
+    let missing = [];
+
+    if(permissionUser.error) {
+        console.log(permissionUser.error);
+        return;
+    } else permissionUser = permissionUser.items.map(p => p.name);
+
+    if((missing = execution.permission.filter(p => !permissionUser.includes(p))).length) {
+        console.log(`You do not have permissions: ${missing.join(", ")}`);
+        return;
+    }
+
     execution.run(cfg, call);
 })();
