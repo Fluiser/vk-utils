@@ -29,5 +29,9 @@ async function call(method, arg = {}) {
     }
     let execution = await cin();
         execution = exe[execution-1] || exe.find(e => e.name === execution.toLowerCase());
+    if(!execution) {
+        console.log(`I can't find defined function...\nSorry.`);
+        return;
+    }
     execution.run(cfg, call);
 })();
