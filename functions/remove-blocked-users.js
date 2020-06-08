@@ -2,6 +2,7 @@ const {cin, sleep} = require("../scr/help.js");
 
 module.exports.name = "remove-users";
 module.exports.description = "Remove blocked user of friends";
+module.exports.permission = ["friends"];
 module.exports.run = async (cfg, call) => {
     let token = await cin(">token[If you used default token in (config.json) press enter]: ") ||  cfg.token;
     let user = await call("users.get");
@@ -10,8 +11,6 @@ module.exports.run = async (cfg, call) => {
         return;
     }
     [user] = user;
-    let permission = await call("apps.getScopes");
-    console.log(`${user.first_name} ${user.last_name}: need permissions [${permission.items.map(perm => perm.name).includes("friends") ? "yes" : "no"}]`)
 
     let {items} = await call("friends.get", {count: 10000});
     items = items.limitedList(300);
