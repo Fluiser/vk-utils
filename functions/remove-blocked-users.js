@@ -20,7 +20,7 @@ module.exports.run = async (cfg, call) => {
         console.log(`[received: ${i+1}]/[total: ${items.length}]`)
         let r = await call("users.get", {user_ids: items[i].join(",")});
         busers = busers.concat(r.filter(user => user.deactivated));
-        await sleep(300);
+        await sleep(500);
     }
 
     console.log(`Total length blocked users: ${busers.length}`);
@@ -28,6 +28,6 @@ module.exports.run = async (cfg, call) => {
     for(let user of busers)
     {
         console.log(`${user.first_name} ${user.last_name}: ${(await call("friends.delete", {user_id: user.id})).success || "ERR"}`);
-        await sleep(2200);
+        await sleep(3500);
     }
 };
