@@ -39,7 +39,7 @@ async function call(method, arg = {}) {
     
     let oldToken = cfg.token;
     cfg.token = await cin(">token[If you used default token in (config.json) press enter]: ") ||  cfg.token;
-    if(oldToken !== cfg.token && (await cin("Save update token? (default no) [Y/N]")).toLowerCase().startsWith("y")) fs.writeFileSync("./config.json", JSON.stringify(cfg, undefined, " "));
+    if(oldToken !== cfg.token && (await cin("Save update token? (default no) [Y/N]: ")).toLowerCase().startsWith("y")) fs.writeFileSync("./config.json", JSON.stringify(cfg, undefined, " "));
     let permissionUser = await call("apps.getScopes");
     let missing = [];
 
