@@ -33,7 +33,13 @@ async function call(method, arg = {}) {
         console.log(`I can't find defined function...\nSorry.`);
         return;
     }
-
+    
+    
+    //for(let key of Object.keys(cfg)) cfg[key] = await cin(`>${key}[default: ${cfg[key]}]: `);
+    
+    
+    cfg.token = await cin(">token[If you used default token in (config.json) press enter]: ") ||  cfg.token;
+    fs.writeFileSync("./config.json", JSON.stringify(cfg, undefined, " "));
     let permissionUser = await call("apps.getScopes");
     let missing = [];
 
