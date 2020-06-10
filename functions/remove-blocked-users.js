@@ -27,7 +27,7 @@ module.exports.run = async (cfg, call) => {
 
     for(let user of busers)
     {
-        console.log(`${user.first_name} ${user.last_name}: ${(await call("friends.delete", {user_id: user.id})).success || "ERR"}`);
+        console.log(`${user.first_name} ${user.last_name}[${user.id}]: ${(await call("friends.delete", {user_id: user.id})).success || "ERR"}`);
         await sleep(3500);
     }
 };
