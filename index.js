@@ -10,14 +10,19 @@ for(let dir of fs.readdirSync("./functions"))
     exe.push(require("./functions/" + dir));
 }
 
-async function call(method, arg = {}) {
-    return new Promise(resolve => {
+async function call(method, arg = {}, errorN) {
+    return new Promise((resolve, reject) => {
        superagent.get("https://api.vk.com/method/" + method).query({
            access_token: cfg.token,
            v: "5.103",
            ...arg
        }).end((error, result) => {
-           resolve( result.body.response || result.body);
+           if(error) {
+             console.log(error);
+             if(errorN >= 3) reject(error);
+             else resolve(await call(method, arg, Number.isNaN(errorN) ? 1 : errorN + 1))
+           }
+           else resolve( result.body.response || result.body);
        });
     });
 }
