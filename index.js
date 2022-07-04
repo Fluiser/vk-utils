@@ -2,7 +2,7 @@ const fs = require("fs");
 const superagent = require("superagent");
 const exe = [];
 require("./scr/prototypes.js");
-const {cin} = require("./scr/help.js");
+const {cin, sleep} = require("./scr/help.js");
 const cfg = require("./config.json")
 
 for(let dir of fs.readdirSync("./functions"))
@@ -20,7 +20,12 @@ async function call(method, arg = {}, errorN) {
            if(error) {
              console.log(error);
              if(errorN >= 3) reject(error);
-             else resolve(await call(method, arg, Number.isNaN(errorN) ? 1 : errorN + 1))
+             else { 
+               console.log(error);
+               console.log("Wait 5 seconds...");
+               await sleep(5000);
+               resolve(await call(method, arg, Number.isNaN(errorN) ? 1 : errorN + 1));
+             }
            }
            else resolve( result.body.response || result.body);
        });
