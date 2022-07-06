@@ -16,7 +16,7 @@ async function call(method, arg = {}, errorN) {
            access_token: cfg.token,
            v: "5.103",
            ...arg
-       }).end((error, result) => {
+       }).end(async (error, result) => {
            if(error) {
              console.log(error);
              if(errorN >= 3) reject(error);
