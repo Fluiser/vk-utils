@@ -1,7 +1,7 @@
 const {cin, sleep, UDSelect} = require("../scr/help.js");
 
 module.exports.name = "remove-notLike";
-module.exports.description = "Удаляет или блокирует пользователей, которые не ставят \"нравится\".";
+module.exports.description = "Удаляет или блокирует пользователей, которые не ставят \"нравится\". Перед использованием допилить напильником.";
 module.exports.permission = ["friends"];
 
 //ok
@@ -104,25 +104,25 @@ module.exports.run = async (cfg, call) => {
     for(const user of users.values())
     {
         let somethingDo = false;
-        let text = [];
+        let text;
         if(user.deactivated)
         {
             const result = await functionBlockUsers(user.id, call);
             somethingDo = true;
-            text.push(`deactivated (${result.success || result.error && result.error.error_msg || result})`);
+            text = `deactivated (${result.success || result.error && result.error.error_msg || result})`;
         }
-        if(user.photo_50 === 'https://vk.com/images/camera_50.png')
+        if(!somethingDo && user.photo_50 === 'https://vk.com/images/camera_50.png')
         {
             const result = await functionPhotoUsers(user.id, call);
             somethingDo = true;
-            text.push(`bad photo (${result.success || result.error && result.error.error_msg || result})`);
+            text = `bad photo (${result.success || result.error && result.error.error_msg || result})`;
         }
-        if(!user.likesCount && completedCount < count)
+        if(!somethingDo && !user.likesCount && completedCount < count)
         {
             const result = await functionNotLikeUsers(user.id, call);
             ++count;
             somethingDo = true;
-            console.log(`not liked (${result.success || result.error && result.error.error_msg || result})`);
+            text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
         }
         console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${somethingDo ? 'skip'.green : text.join(', ').red}`);
         if(somethingDo)

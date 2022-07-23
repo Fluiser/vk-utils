@@ -1,3 +1,8 @@
+/**
+ * 
+ * @param {String} data 
+ * @returns Promise<string>
+ */
 module.exports.cin = (str) => {
     const readline = require('readline');
     return new Promise(resolve => {
@@ -17,7 +22,7 @@ module.exports.sleep = ms => new Promise(r => setTimeout(r, ms));
 /**
  * 
  * @param {String[] | {text: string, value: unknown}} data 
- * @returns Promise<unknown>
+ * @returns Promise<string>
  */
 module.exports.UDSelect = async (data, text) => {
     if(typeof data[0] === 'object') {
@@ -48,6 +53,7 @@ module.exports.UDSelect = async (data, text) => {
     }
 }
 
+//@colors
 String.prototype.__defineGetter__('red', function(){
     return `\x1B[31m${this}\x1B[39m`;
 });
