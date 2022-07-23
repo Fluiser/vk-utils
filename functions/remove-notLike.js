@@ -1,19 +1,20 @@
 const {cin, sleep, UDSelect} = require("../scr/help.js");
 
 module.exports.name = "remove-notLike";
-module.exports.description = "Remove users who not like posts";
+module.exports.description = "Удаляет или блокирует пользователей, которые не ставят \"нравится\".";
 module.exports.permission = ["friends"];
-const colors = require('colors');
+
+//ok
 
 const MAX_POSTS = 15;
 
 const doWithUser = [
     {
-        text: 'block user',
+        text: 'block',
         value: (user_id, call) => call("account.ban", {owner_id: user_id})
     },
     {
-        text: 'delete user',
+        text: 'delete',
         value: (user_id, call) => call("friends.delete", {user_id})
     },
     {
@@ -91,11 +92,11 @@ module.exports.run = async (cfg, call) => {
         console.log('\n---------- END INIT LIKES ---------\n');
     }
 
-    console.log('--------- BLOCKED USERS-----------');
+    console.log('--------- BLOCKED USERS -----------');
     const functionBlockUsers = await UDSelect(doWithUser);
-    console.log('-------- WRONT PHOTO USERS--------');
+    console.log('-------- WRONT PHOTO USERS --------');
     const functionPhotoUsers = await UDSelect(doWithUser);
-    console.log('--------- WHO DONT LIKE-----------');
+    console.log('--------- WHO DONT LIKE -----------');
     const functionNotLikeUsers = await UDSelect(doWithUser);
     const count = +(await cin('[count for do]: '));
     let completedCount = 0;
@@ -123,7 +124,7 @@ module.exports.run = async (cfg, call) => {
             somethingDo = true;
             console.log(`not liked (${result.success || result.error && result.error.error_msg || result})`);
         }
-        console.log(`${user.first_name} ${user.last_name} - ${somethingDo ? 'skip'.green : text.join(', ').red}`);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${somethingDo ? 'skip'.green : text.join(', ').red}`);
         if(somethingDo)
             await sleep(3500);
     }

@@ -47,3 +47,10 @@ module.exports.UDSelect = async (data, text) => {
         return value;
     }
 }
+
+String.prototype.__defineGetter__('red', function(){
+    return `\x1B[31m${this}\x1B[39m`;
+});
+String.prototype.__defineGetter__('green', function() {
+    return `\x1B[32m${this}\x1B[39m`;
+});
