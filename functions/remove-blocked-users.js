@@ -23,12 +23,12 @@ const functionDelete =  ['block', 'black', 'blocklist', 'blacklist', '-block', '
 // console.log(''+functionCheck, '\n', ''+functionDelete); //for test.
 
 module.exports.run = async (cfg, call) => {
-    let user = await call("users.get");
-    if(user.error) {
-        console.log(user);
-        return;
-    }
-    [user] = user;
+    // let user = await call("users.get");
+    // if(user.error) {
+    //     console.log(user);
+    //     return;
+    // }
+    // [user] = user;
 
     let {items} = await call("friends.get", {count: 10000});
     items = items.limitedList(300);
