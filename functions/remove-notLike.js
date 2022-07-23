@@ -117,7 +117,7 @@ module.exports.run = async (cfg, call) => {
         if(!somethingDo && !user.likesCount && completedCount < count)
         { // Не лайкает
             const result = await functionNotLikeUsers(user.id, call);
-            ++count;
+            ++completedCount;
             text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
         }
         console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green}`);
