@@ -103,28 +103,24 @@ module.exports.run = async (cfg, call) => {
 
     for(const user of users.values())
     {
-        let somethingDo = false;
         let text;
         if(user.deactivated)
         {
             const result = await functionBlockUsers(user.id, call);
-            somethingDo = true;
             text = `deactivated (${result.success || result.error && result.error.error_msg || result})`;
         }
         if(!somethingDo && user.photo_50 === 'https://vk.com/images/camera_50.png')
         {
             const result = await functionPhotoUsers(user.id, call);
-            somethingDo = true;
             text = `bad photo (${result.success || result.error && result.error.error_msg || result})`;
         }
         if(!somethingDo && !user.likesCount && completedCount < count)
         {
             const result = await functionNotLikeUsers(user.id, call);
             ++count;
-            somethingDo = true;
             text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
         }
-        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${somethingDo ? 'skip'.green : text.join(', ').red}`);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green`);
         if(somethingDo)
             await sleep(3500);
     }
