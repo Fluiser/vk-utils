@@ -105,22 +105,22 @@ module.exports.run = async (cfg, call) => {
     {
         let text;
         if(user.deactivated)
-        {
+        { // забанен
             const result = await functionBlockUsers(user.id, call);
             text = `deactivated (${result.success || result.error && result.error.error_msg || result})`;
         }
         if(!somethingDo && user.photo_50 === 'https://vk.com/images/camera_50.png')
-        {
+        { // фото мусор
             const result = await functionPhotoUsers(user.id, call);
             text = `bad photo (${result.success || result.error && result.error.error_msg || result})`;
         }
         if(!somethingDo && !user.likesCount && completedCount < count)
-        {
+        { // Не лайкает
             const result = await functionNotLikeUsers(user.id, call);
             ++count;
             text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
         }
-        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green`);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green}`);
         if(somethingDo)
             await sleep(3500);
     }
