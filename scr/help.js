@@ -30,7 +30,7 @@ module.exports.UDSelect = async (data, text) => {
             console.log(`[${i+1}] ${data[i].text}`);
         let index = await module.exports.cin(text);
         let value = data[index-1];
-        while(!(value = data[index]))
+        while(!(value = data[index-1]))
         {
             console.log('\nWrong answer.\n');
             index = await module.exports.cin(text);
