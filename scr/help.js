@@ -29,12 +29,12 @@ module.exports.UDSelect = async (data, text) => {
         for(let i = 0; i < data.length; ++i)
             console.log(`[${i+1}] ${data[i].text}`);
         let index = await module.exports.cin(text);
-        let value = data[index];
+        let value = data[index-1];
         while(!(value = data[index]))
         {
             console.log('\nWrong answer.\n');
             index = await module.exports.cin(text);
-            value = data[index];
+            value = data[index-1];
         }
         return value.value;
     } else {
