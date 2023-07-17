@@ -4,9 +4,10 @@ module.exports.name = "remove-notLike";
 module.exports.description = "Удаляет или блокирует пользователей, которые не ставят \"нравится\". Перед использованием допилить напильником.";
 module.exports.permission = ["friends"];
 
-//ok
+const MAX_POSTS = 100;
+const whiteList = [
 
-const MAX_POSTS = 15;
+];
 
 const doWithUser = [
     {
@@ -36,12 +37,13 @@ module.exports.run = async (cfg, call) => {
             lengthCollection = data.count;
             for(const item of data.items)
             {
+                if(posts.size >= MAX_POSTS) break;
                 posts.add(item);
             }
             i += data.items.length;
             await sleep(5000);
         }
-        console.log(`Length collection posts ${lengthCollection}`);
+        console.log(`Length collection posts ${lengthCollection} | ${posts.size}`);
     }
 
     let {items} = await call("friends.get", {count: 10000});
@@ -59,6 +61,15 @@ module.exports.run = async (cfg, call) => {
         await sleep(2500);
     }
 
+    //@remove whitelist
+
+    for(const wi of whiteList)
+    {
+        users.delete(wi);
+    }
+
+    //
+
     console.log('\n-------------INIT LIKES ON EVERY POST-------------\n');
     {
         function collect(items) {
@@ -68,6 +79,9 @@ module.exports.run = async (cfg, call) => {
                 if(user)
                     if(typeof user.likesCount === 'undefined') user.likesCount = 1;
                     else ++user.likesCount;
+                // else {
+                // 	users.set(user_id, {likesCount: 1, id: user_id, anon: true});
+                // }
             }
         }
         for(const post of posts)
@@ -92,38 +106,72 @@ module.exports.run = async (cfg, call) => {
         console.log('\n---------- END INIT LIKES ---------\n');
     }
 
-    console.log('--------- BLOCKED USERS -----------');
-    const functionBlockUsers = await UDSelect(doWithUser);
-    console.log('-------- WRONT PHOTO USERS --------');
-    const functionPhotoUsers = await UDSelect(doWithUser);
-    console.log('--------- WHO DONT LIKE -----------');
-    const functionNotLikeUsers = await UDSelect(doWithUser);
+    // console.log('--------- BLOCKED USERS -----------');
+    // const functionBlockUsers = await UDSelect(doWithUser);
+    // console.log('-------- WRONT PHOTO USERS --------');
+    // const functionPhotoUsers = await UDSelect(doWithUser);
+    // console.log('--------- WHO DONT LIKE -----------');
+    // const functionNotLikeUsers = await UDSelect(doWithUser);
     const count = +(await cin('[count for do]: '));
-    let completedCount = 0;
 
-    for(const user of users.values())
+    const liked = [];
+    const normalNotLiked = [];
+    const notLiked = [];
+    for(const value of users.values())
     {
-        let text;
-        if(user.deactivated)
-        { // забанен
-            const result = await functionBlockUsers(user.id, call);
-            text = `deactivated (${result.success || result.error && result.error.error_msg || result})`;
-        }
-        if(!somethingDo && user.photo_50 === 'https://vk.com/images/camera_50.png')
-        { // фото мусор
-            const result = await functionPhotoUsers(user.id, call);
-            text = `bad photo (${result.success || result.error && result.error.error_msg || result})`;
-        }
-        if(!somethingDo && !user.likesCount && completedCount < count)
-        { // Не лайкает
-            const result = await functionNotLikeUsers(user.id, call);
-            ++completedCount;
-            text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
-        }
-        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green}`);
-        if(somethingDo)
-            await sleep(3500);
+        if(value.likesCount){ if(value.deactivated) liked.push(value); else normalNotLiked.push(value); }
+        else if(value.deactivated) notLiked.push(value);
     }
+
+    console.log(notLiked.length, ' will be blocked');
+
+    for(const user of notLiked)
+    {
+        const result = await doWithUser[0].value(user.id, call);
+        await sleep(5500);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${result.success || result.error && result.error.error_msg || result}`);
+    }
+
+    console.log(liked.length, ' normal');
+    for(const user of liked)
+    {
+        const result = await doWithUser[1].value(user.id, call);
+        await sleep(5500);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${result.success || result.error && result.error.error_msg || result}`)
+    }
+
+    for(let i = 0; i < count; ++i)
+    {
+        const user = normalNotLiked[i];
+        const result = await doWithUser[0].value(user.id, call);
+        console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${result.success || result.error && result.error.error_msg || result}`)
+        await sleep(5500);
+    }
+
+    // for(const user of [...users.values()].sort((a,b) =>  (b.likesCount ||0) - (a.likesCount||0) ))
+    // {
+    //     // let text;
+    //     // if(user.deactivated)
+    //     // { // забанен
+    //     //     const result = await functionBlockUsers(user.id, call);
+    //     //     text = `deactivated (${result.success || result.error && result.error.error_msg || result})`;
+    //     // }
+    //     // if(!somethingDo && user.photo_50 === 'https://vk.com/images/camera_50.png')
+    //     // { // фото мусор
+    //     //     const result = await functionPhotoUsers(user.id, call);
+    //     //     text = `bad photo (${result.success || result.error && result.error.error_msg || result})`;
+    //     // }
+    //     // if(!somethingDo && !user.likesCount && completedCount < count)
+    //     // { // Не лайкает
+    //     //     const result = await functionNotLikeUsers(user.id, call);
+    //     //     ++completedCount;
+    //     //     text = `not liked (${result.success || result.error && result.error.error_msg || result})`;
+    //     // }
+    //     // console.log(`${user.first_name} ${user.last_name} [${user.id}] - ${text ? text.red : 'skip'.green}`);
+    //     // if(somethingDo)
+    //     //     await sleep(3500);
+    //     fileLog.write(`${user.anon ? user.id : `${user.first_name} ${user.last_name} [${user.id}]`} - ${user.likesCount||0} лайков\n`);
+    // }
 
     console.log(`Total length friends: ${users.length}`);
 };
