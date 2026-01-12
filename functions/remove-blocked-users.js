@@ -20,7 +20,7 @@ const functionDelete =  ['block', 'black', 'blocklist', 'blacklist', '-block', '
 
 // console.log(''+functionCheck, '\n', ''+functionDelete); //for test.
 
-async function usersGet(call) {
+async function friendsGet(call) {
     let info = await call("friends.get", {count: 10000});
     const totalFriends = info.count;
     let items = info.items;
@@ -44,7 +44,7 @@ module.exports.run = async (cfg, call) => {
     // }
     // [user] = user;
 
-    let items = await usersGet(call);
+    let items = await friendsGet(call);
     items = items.limitedList(300);
 
     let busers = [];
