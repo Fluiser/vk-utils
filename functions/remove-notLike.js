@@ -24,6 +24,23 @@ const doWithUser = [
     }
 ];
 
+async function friendsGet(call) {
+    let info = await call("friends.get", {count: 10000});
+    const totalFriends = info.count;
+    let items = info.items;
+
+    for(let i = 1; i < Math.ceil(totalFriends/2500); ++i)
+    {
+        console.log(`${i*2500}/${totalFriends}`);
+        await sleep(2000);
+        const nextitems = await call("friends.get", {count: 2500, offset: i*2500});
+        items = items.concat(nextitems.items);
+    }
+
+    return items;
+}
+
+
 module.exports.run = async (cfg, call) => {
     const [author] = await call('users.get');
     const posts = new Set();
@@ -46,7 +63,7 @@ module.exports.run = async (cfg, call) => {
         console.log(`Length collection posts ${lengthCollection} | ${posts.size}`);
     }
 
-    let {items} = await call("friends.get", {count: 10000});
+    let items = await friendsGet(call);
     const users = new Map();
     items = items.limitedList(300);
     
